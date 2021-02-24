@@ -14,4 +14,11 @@ public class Tile {
     TileType getType() {
         return this.type;
     }
+
+    void setType(TileType type) {
+        this.type = type;
+    }
+
+    int getY() { return this.y; }
+    int getX() { return this.x; }
 }

@@ -1,7 +1,9 @@
 package paul.games.heroes.level.tiles;
 
-import paul.games.heroes.level.generator.noise.OpenSimplex2F;
-import paul.games.heroes.level.generator.noise.OpenSimplex2S;
+import paul.games.heroes.level.generator.noise.NoiseMap;
+import paul.games.heroes.math.MoreMath;
+
+import java.util.Random;
 
 public class TileMap {
     private final int width;
@@ -9,23 +11,22 @@ public class TileMap {
     private final float tileSize = 16.0f;
 
     Tile[][] tileGrid;
-    double[][] noiseBuffer;
+    double[][] elevationBuffer;
+    double[][] temperatureBuffer;
+    double[][] precipitationBuffer;
 
     public TileMap(int width, int height) {
         this.width = width;
         this.height = height;
 
-        // noise stuff
-        final double PERIOD = 16.0;
-        final int OFF_X = width*2;
-        final int OFF_Y = height*2;
-        final double FREQ = 1.0 / PERIOD;
+        NoiseMap elevationMap = new NoiseMap(16.0f, this.width, this.height);
+        this.elevationBuffer = elevationMap.generate(100);
 
-        OpenSimplex2S noise = new OpenSimplex2S(1234);
-        OpenSimplex2S.GenerateContext2D noiseBulk = new OpenSimplex2S.GenerateContext2D(OpenSimplex2S.LatticeOrientation2D.Standard, FREQ, FREQ, 1.0);
+        NoiseMap temperatureMap = new NoiseMap(64.0f, this.width, this.height);
+        this.temperatureBuffer = temperatureMap.generate(101);
 
-        this.noiseBuffer = new double[height][width];
-        noise.generate2(noiseBulk, noiseBuffer, OFF_X, OFF_Y);
+        NoiseMap precipitationMap = new NoiseMap(16.0f, this.width, this.height);
+        this.precipitationBuffer = precipitationMap.generate(102);
 
         this.tileGrid = new Tile[height][width];
         populate();
@@ -47,34 +48,30 @@ public class TileMap {
         {
             for (int x = 0; x < this.width; x++)
             {
-                double value = this.noiseBuffer[y][x];
+                double elevation = this.elevationBuffer[y][x];
+                double temperature = this.temperatureBuffer[y][x];
+                double precipitation = this.precipitationBuffer[y][x];
 
-                // Clamp value to -1 <-> 1
-                if (value < -1) value = -1;
-                else if (value > 1) value = 1;
+                // Clamp initial noise to -1 <-> 1
+                elevation = MoreMath.clamp(elevation, -1, 1);
+                temperature = MoreMath.clamp(temperature, -1, 1);
+                precipitation = MoreMath.clamp(precipitation, -1, 1);
+                // Convert noise to easier to understand units
+                elevation = MoreMath.clamp(elevation*=8000, -400, 8000); // -400m <-> 8000m
+                temperature = MoreMath.clamp(temperature*=90, -90, 40); // -90°C <-> 40°C
+                precipitation = MoreMath.clamp(precipitation*=400, 0, 400); // 0cm <-> 400cm
 
-                // General landscape population
-                if (value >= 0.8 && value <= 1.0)
-                {
-                    setTile(new Tile(TileType.STONE, y, x), y, x);
-                }
-                else if (value >= 0.0 && value <= 0.8)
-                {
-                    setTile(new Tile(TileType.GRASS, y, x), y, x);
-                }
-                else if (value >= -0.5 && value <= 0.0)
-                {
-                    setTile(new Tile(TileType.SAND, y, x), y, x);
-                }
-                else {
-                    setTile(new Tile(TileType.WATER, y, x), y, x);
+                Tile tile = new Tile(null, y, x); // To be filled
+
+                if(temperature <= 0 && temperature >= -90) {
+                    Random r = new Random();
+                    TileType type = r.nextInt(2) < 1 ? TileType.ICE : TileType.SNOW;
+                    tile.setType(type);
+                } else {
+                    tile.setType(TileType.GRASS);
                 }
 
-                // Now put special tiles down
-                if (value > 0.99 && value < 0.999 )
-                {
-                    setTile(new Tile(TileType.LAVA, y, x), y, x);
-                }
+                setTile(tile, y, x);
             }
         }
     }
