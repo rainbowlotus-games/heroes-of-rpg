@@ -3,9 +3,22 @@ package paul.games.heroes.components;
 import com.badlogic.ashley.core.Component;
 
 public class TypeComponent implements Component {
-    public static final int PLAYER = 0;
-    public static final int ENEMY = 1;
-    public static final int OTHER = 2;
+    public enum Type {
+        PLAYER(0),
+        ENEMY(1),
+        OTHER(2);
 
-    public int type = OTHER;
+        private final int id;
+
+        Type(int id) {
+            this.id = id;
+        }
+    }
+
+    private Type type;
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
 }

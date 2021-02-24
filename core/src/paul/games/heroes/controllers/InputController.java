@@ -1,4 +1,4 @@
-package paul.games.heroes.controller;
+package paul.games.heroes.controllers;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
