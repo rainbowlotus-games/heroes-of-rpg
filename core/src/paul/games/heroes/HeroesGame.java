@@ -9,6 +9,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class HeroesGame extends Game {
+	// Collection of screens to reference for changeScreen(String screenId)
 	public enum Screens {
 		MAIN_SCREEN(MainScreen.class, "MainScreen");
 
@@ -34,7 +35,8 @@ public class HeroesGame extends Game {
 				throw new InternalError(e);
 			}
 		}
-	} // Collection of screens to reference for changeScreen(String screenId)
+	}
+	// Loops over collection and sets screen, if screenId was valid
 	public void changeScreen(String screenId) {
 		for(Screens s : Screens.values()) {
 			if (s.screenId.equals(screenId)) {
@@ -45,7 +47,7 @@ public class HeroesGame extends Game {
 				throw new IllegalArgumentException("Screen with screenId: " + screenId + " does not exist!");
 			}
 		}
-	} // Loops over collection and sets screen, if screenId was valid
+	}
 	public boolean isSameScreen(Screen s, String screenId) {
 		return (s.getClass().getName().endsWith(screenId));
 	}
