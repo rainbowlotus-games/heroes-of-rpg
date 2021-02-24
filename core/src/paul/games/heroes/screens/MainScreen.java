@@ -14,7 +14,6 @@ import paul.games.heroes.HeroesGame;
 import paul.games.heroes.components.PlayerComponent;
 import paul.games.heroes.components.TextureComponent;
 import paul.games.heroes.components.TransformComponent;
-import paul.games.heroes.components.TypeComponent;
 import paul.games.heroes.controllers.InputController;
 import paul.games.heroes.viewport.PixelPerfectViewport;
 import paul.games.heroes.systems.RenderingSystem;
@@ -53,8 +52,6 @@ public class MainScreen implements Screen {
 
     private void createPlayer() {
         Entity entity = engine.createEntity();
-        TypeComponent typeComponent = new TypeComponent();
-        typeComponent.setType(TypeComponent.Type.PLAYER);
         TransformComponent transformComponent = engine.createComponent(TransformComponent.class);
         transformComponent.position.x = 16;
         transformComponent.position.y = 16;
@@ -63,7 +60,6 @@ public class MainScreen implements Screen {
         textureComponent.region = new TextureRegion(new Texture(Gdx.files.internal("player.png")));
 
         entity.add(new PlayerComponent());
-        entity.add(typeComponent);
         entity.add(transformComponent);
         entity.add(textureComponent);
 
