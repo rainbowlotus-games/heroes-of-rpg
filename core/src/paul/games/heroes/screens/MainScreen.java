@@ -15,6 +15,10 @@ import paul.games.heroes.components.PlayerComponent;
 import paul.games.heroes.components.TextureComponent;
 import paul.games.heroes.components.TransformComponent;
 import paul.games.heroes.controllers.InputController;
+import paul.games.heroes.level.tiles.Tile;
+import paul.games.heroes.level.tiles.TileMap;
+import paul.games.heroes.level.tiles.TileMapRenderer;
+import paul.games.heroes.managers.AssetManager;
 import paul.games.heroes.viewport.PixelPerfectViewport;
 import paul.games.heroes.systems.RenderingSystem;
 
@@ -25,8 +29,10 @@ public class MainScreen implements Screen {
     private Engine engine;
     private SpriteBatch batch;
     private Viewport viewport;
-    private OrthographicCamera cam;
     private RenderingSystem renderingSys;
+
+    private TileMapRenderer tileMapRenderer;
+    private TileMap tileMap;
 
     public MainScreen(HeroesGame game) {
         this.game = game;
@@ -34,6 +40,11 @@ public class MainScreen implements Screen {
         this.batch = new SpriteBatch();
         // For now, viewport dimensions will be the same as the windows
         this.viewport = new PixelPerfectViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        // Noise + TileMap + TileMapRenderer test
+        this.tileMap = new TileMap(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        AssetManager assetManager = new AssetManager("tiles.txt");
+        this.tileMapRenderer = new TileMapRenderer(assetManager, batch);
 
         // Setup engine and its systems
         setupEngine();
@@ -45,7 +56,7 @@ public class MainScreen implements Screen {
         // Instantiate engine
         this.engine = new Engine();
         // Instantiate systems
-        this.renderingSys = new RenderingSystem(this.batch, this.viewport);
+        this.renderingSys = new RenderingSystem(batch, viewport);
         // Add systems
         this.engine.addSystem(renderingSys);
     }
@@ -74,6 +85,7 @@ public class MainScreen implements Screen {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        tileMapRenderer.render(tileMap);
         engine.update(delta);
     }
 
