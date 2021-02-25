@@ -24,4 +24,17 @@ public class MoreMath {
     public static double clamp(double val, double min, double max) {
         return Math.max(min, Math.min(max, val));
     }
+    /**
+     * Multiply val by max and then clamp between min and max.
+     * @param val
+     * @param min
+     * @param max
+     * @return
+     */
+    public static double multiClamp(double val, double min, double max) {
+        return clamp(val*max, min, max);
+    }
+    public static boolean isValueBetween(double val, double left, double right) {
+        return val >= left && val <= right;
+    }
 }
